@@ -73,11 +73,25 @@ const	Header = (props) =>
 	)
 }
 
-const	Statistics = ({text, rate, text2}) =>
+const	StatisticLine = ({text, rate, text2}) =>
 {
 	return (
 		<div>
 			<p>{text} {rate} {text2}</p> 
+		</div>
+	)
+}
+
+const	Statistics = ({rate}) =>
+{
+	return (
+		<div>
+			<StatisticLine text = {rate[0].text} rate = {rate[0].value} />
+			<StatisticLine text = {rate[1].text} rate = {rate[1].value} />
+			<StatisticLine text = {rate[2].text} rate = {rate[2].value} />
+			<StatisticLine text = {rate[3].text} rate = {rate[3].value} />
+			<StatisticLine text = {rate[4].text} rate = {rate[4].value} />
+			<StatisticLine text = {rate[5].text} rate = {rate[5].value} text2 = {rate[5].text2} />
 		</div>
 	)
 }
@@ -94,12 +108,7 @@ const	Display = ({rate}) =>
 	}
 	return (
 		<div>
-			<Statistics text = {rate[0].text} rate = {rate[0].value} />
-			<Statistics text = {rate[1].text} rate = {rate[1].value} />
-			<Statistics text = {rate[2].text} rate = {rate[2].value} />
-			<Statistics text = {rate[3].text} rate = {rate[3].value} />
-			<Statistics text = {rate[4].text} rate = {rate[4].value} />
-			<Statistics text = {rate[5].text} rate = {rate[5].value} text2 = {rate[5].text2} />
+			<Statistics rate = {rate} />
 		</div>
 	)
 }
