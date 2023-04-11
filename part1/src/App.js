@@ -84,6 +84,14 @@ const	Statistics = ({text, rate, text2}) =>
 
 const	Display = ({rate}) =>
 {
+	if (rate[3].value === 0)
+	{
+		return (
+			<div>
+				<p>No feedback given</p>
+			</div>
+		)
+	}
 	return (
 		<div>
 			<Statistics text = {rate[0].text} rate = {rate[0].value} />
