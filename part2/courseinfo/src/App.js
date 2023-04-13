@@ -21,16 +21,23 @@ const	Content = ({course}) =>
 			{course.parts.map(part => 
 				<Part part = {part.name} exercise = {part.exercises} key = {part.id} />
 			)}
+			<Total number = {course.parts} />
 		</div>
 	)
 }
 
-const	Total = (props) =>
+const	Total = ({number}) =>
 {
-	console.log(props);
+	let	total;
+	
+	total = 0;
+	for (let i = 0; i < number.length; i++)
+	{
+		total += number[i].exercises;
+	}	
 	return (
 		<div>
-			<p>Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}</p>
+			<p>Number of exercises {total}</p>
 		</div>
 	)
 }
