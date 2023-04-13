@@ -28,13 +28,16 @@ const	Content = ({course}) =>
 
 const	Total = ({number}) =>
 {
-	let	total;
+	const	initialValue = 0;
+	let		total;
 	
-	total = 0;
-	for (let i = 0; i < number.length; i++)
-	{
-		total += number[i].exercises;
-	}	
+	total = number.reduce((accumulator, currentValue) =>
+		{
+			return (accumulator + currentValue.exercises);
+		},
+			initialValue
+		);
+	
 	return (
 		<div>
 			<p>Number of exercises {total}</p>
