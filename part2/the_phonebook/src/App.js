@@ -7,8 +7,15 @@ const	Name = ({name}) =>
 	)
 }
 
-const Add = ({persons}) =>
+const Add = ({persons, duplicate}) =>
 {
+	console.log(duplicate);
+	/*if (duplicate === 1)
+	{
+		return (
+			<p>There are duplicates :/</p>
+		)
+	}*/
 	return (
 			<div>
 				{
@@ -36,16 +43,50 @@ const App = () => {
 		name: newName,
 		id: (persons.length - 1) + 1
 	}
-	setPersons(persons.concat(personObject));
-	setNewName('');
+	if (duplicateSearch(personObject.name) === 1)
+	{
+		alert(`${personObject.name} is already added to phonebook`);
+	}
+	else
+	{	
+		setPersons(persons.concat(personObject));
+		setNewName('');
+	}
   }
   const	inputHandle = (event) =>
   {
 	console.log(event.target.value);
 	setNewName(event.target.value);
   }
+  const	duplicateSearch = (find) =>
+  {
+	for (let i = 0; i < persons.length; i++)
+	{
+		if (persons[i].name === find)
+				return (1);
+	}
+	return (0);
+  }
+  /*const	duplicateSearch = () =>
+  {
+	if (persons.length === 1)
+		return (0);
+	for (let i = 0; i < persons.length; i++)
+	{
+		for (let n = (i + 1); n < persons.length; n++)
+		{
+			if (persons[i].name === persons[n].name)
+				return (1);
+		}
+	}
+	return (0);
+  }*/
+  let	duplicate;
   
   persons[0].id = 0;
+  duplicate = duplicateSearch();
+  //console.log(persons[0].name);
+  //console.log(isEqual(persons[0].name, persons[1].name))
 
   return (
     <div>
@@ -64,7 +105,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-	  	<Add persons = {persons} />
+	  	<Add persons = {persons} duplicate = {duplicate}/>
     </div>
   )
 }
