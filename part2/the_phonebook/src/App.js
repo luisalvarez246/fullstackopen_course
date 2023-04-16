@@ -1,21 +1,36 @@
 import { useState } from 'react'
 
-const	Contact = ({name, number}) =>
+const	Filter = ({filter, filterHandle}) =>
 {
 	return (
-		<p>{name} {number}</p>
+		<div>
+		filter:
+	  		<input
+	  			value = {filter}
+				onChange = {filterHandle}
+	  		/>
+	  	</div>
 	)
 }
 
-const Add = ({persons, duplicate}) =>
+const	Contact = ({name, number, filter}) =>
 {
-	console.log(duplicate);
+	if (name.includes(filter))
+	{
+		return (
+			<p>{name} {number}</p>
+		)
+	}
+}
+
+const Add = ({persons, filter}) =>
+{
 	return (
 			<div>
 				{
 					persons.map(person =>
 					[
-						<Contact name = {person.name} number = {person.number} key ={person.id}/>
+						<Contact name = {person.name} number = {person.number} filter = {filter} key ={person.id}/>
 					]
 					)
 				}
@@ -29,7 +44,8 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState('');
   const	[newNumber, setNewNumber] = useState('');
-  
+  const [newFilter, setNewFilter] = useState(''); 
+ 
   const	addName = (event) =>
   {
 	event.preventDefault();
@@ -37,7 +53,7 @@ const App = () => {
 	{
 		name: newName,
 		number: newNumber,
-		id: (persons.length - 1) + 1
+		id: (persons.length - 1) + 1,
 	}
 	if (personObject.name === '' || personObject.number === '')
 	{
@@ -68,6 +84,11 @@ const App = () => {
 	console.log(event.target.value);
 	setNewNumber(event.target.value);
   }
+  const	filterHandle = (event) =>
+  {
+	console.log(event.target.value);
+	setNewFilter(event.target.value);
+  }
   const	duplicateSearch = (name, number) =>
   {
 	for (let i = 0; i < persons.length; i++)
@@ -82,20 +103,15 @@ const App = () => {
 	}
 	return (0);
   }
-  let	duplicate;
-  //let	test_array;
   
   persons[0].id = 0;
-  duplicate = duplicateSearch();
-  //test_array = persons.map(string => string.name);
-  //console.log(test_array[1]);
-  //console.log(isEqual(persons[0].name, persons[1].name))
 
   return (
     <div>
       <h2>Phonebook</h2>
+	  <Filter filter = {newFilter} filterHandle = {filterHandle} />
+	  <h3>Add a new</h3>
       <form onSubmit = {addName}>
-      	<div>debug: {newNumber}</div>
         <div>
           name: 
 		  	<input 
@@ -115,7 +131,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-	  	<Add persons = {persons} duplicate = {duplicate}/>
+	  	<Add persons = {persons} filter = {newFilter}/>
     </div>
   )
 }
