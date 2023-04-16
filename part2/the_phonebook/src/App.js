@@ -1,5 +1,30 @@
 import { useState } from 'react'
 
+const Form = ({add, name, nameHandle, number, numberHandle}) =>
+{
+	return (
+		<form onSubmit = {add}>
+        <div>
+          name: 
+		  	<input 
+		  		value = {name}
+				onChange = {nameHandle}
+			/>
+        </div>
+        <div>
+          number: 
+		  	<input 
+		  		value = {number}
+				onChange = {numberHandle}
+			/>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+	)
+}
+
 const	Filter = ({filter, filterHandle}) =>
 {
 	return (
@@ -23,7 +48,7 @@ const	Contact = ({name, number, filter}) =>
 	}
 }
 
-const Add = ({persons, filter}) =>
+const AddPerson = ({persons, filter}) =>
 {
 	return (
 			<div>
@@ -105,33 +130,20 @@ const App = () => {
   }
   
   persons[0].id = 0;
+  console.log(persons[0].name.toLowerCase());
 
   return (
     <div>
       <h2>Phonebook</h2>
 	  <Filter filter = {newFilter} filterHandle = {filterHandle} />
 	  <h3>Add a new</h3>
-      <form onSubmit = {addName}>
-        <div>
-          name: 
-		  	<input 
-		  		value = {newName}
-				onChange = {nameHandle}
-			/>
-        </div>
-        <div>
-          number: 
-		  	<input 
-		  		value = {newNumber}
-				onChange = {numberHandle}
-			/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+	  <Form 
+	  	add = {addName} 
+		name = {newName} nameHandle = {nameHandle}
+		number = {newNumber} numberHandle = {numberHandle} 
+		/>
       <h2>Numbers</h2>
-	  	<Add persons = {persons} filter = {newFilter}/>
+	  	<AddPerson persons = {persons} filter = {newFilter}/>
     </div>
   )
 }
