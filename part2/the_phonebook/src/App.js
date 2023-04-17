@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import addService from './services/addService'
 
 const Form = ({add, name, nameHandle, number, numberHandle}) =>
 {
@@ -72,11 +72,11 @@ const App = () => {
  
   const	effectHook = () =>
   {
-	axios
-		.get('http://localhost:3001/persons')
-		.then(response =>
+	addService
+		.getAll()
+		.then(initialPersons =>
 			{
-				setPersons(response.data);
+				setPersons(initialPersons);
 			}
 		)
   }
@@ -89,7 +89,7 @@ const App = () => {
 	{
 		name: newName,
 		number: newNumber,
-		id: (persons.length - 1) + 1,
+		id: (persons.length) + 1,
 	}
 	if (personObject.name === '' || personObject.number === '')
 	{
@@ -105,9 +105,15 @@ const App = () => {
 	}
 	else
 	{	
-		setPersons(persons.concat(personObject));
-		setNewName('');
-		setNewNumber('');
+		addService
+			.create(personObject)
+			.then(returnedPerson =>
+			{
+				setPersons(persons.concat(returnedPerson));
+				setNewName('');
+				setNewNumber('');
+			}	
+			)
 	}
   }
   const	nameHandle = (event) =>
