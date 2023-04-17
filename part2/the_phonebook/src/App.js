@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Form = ({add, name, nameHandle, number, numberHandle}) =>
 {
@@ -64,12 +65,22 @@ const AddPerson = ({persons, filter}) =>
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const	[newNumber, setNewNumber] = useState('');
   const [newFilter, setNewFilter] = useState(''); 
+ 
+  const	effectHook = () =>
+  {
+	axios
+		.get('http://localhost:3001/persons')
+		.then(response =>
+			{
+				setPersons(response.data);
+			}
+		)
+  }
+  useEffect(effectHook, []);
  
   const	addName = (event) =>
   {
@@ -129,8 +140,8 @@ const App = () => {
 	return (0);
   }
   
-  persons[0].id = 0;
-  console.log(persons[0].name.toLowerCase());
+  //persons[0].id = 0;
+  //console.log(persons[0].name.toLowerCase());
 
   return (
     <div>
