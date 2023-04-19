@@ -99,11 +99,14 @@ const App = () => {
 			name: newName,
 			number: newNumber,
 			id: persons.length + 1,
-			//id: idAssign(persons),
 		}
 		if (personObject.name === '' || personObject.number === '')
 		{
 			alert(`No blanks allowed for name or number fields`);
+		}
+		else if (duplicateSearch(personObject.name, null) === 1 && duplicateSearch(null, personObject.number) !== 2)
+		{
+			updateNumber(personObject.name, personObject.number);
 		}
 		else if (duplicateSearch(personObject.name, null) === 1)
 		{
@@ -231,6 +234,24 @@ const App = () => {
 		if (window.confirm(`Do you want to delete ${persons[id - 1].name} from phonebook?`))
 			removePerson(id);
 	}
+
+	const	updateNumber = (name, number) =>
+	{
+		if (window.confirm(`Do you want to overwrite ${name}'s phone number?`))
+		{ 
+			const	targetPerson = persons.filter(person => (person.name === name));
+			const	targetId = (persons.filter(person => (person.name === name)))[0].id;
+			
+			targetPerson[0].number = number;
+			const	updatedNumber = persons.map(person => person.name !== name ? person : targetPerson[0]);
+			
+			axios.put(`http://localhost:3001/persons/${targetId}`, updatedNumber[targetId - 1]);
+			setPersons(updatedNumber);
+		}
+	}
+
+	//const	test = (persons.filter(person => (person.name === 'Dan Cruz')))[0].id;
+	//console.log(test);
 
   return (
     <div>
