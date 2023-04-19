@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import addService from './services/addService'
-import axios from 'axios'
 
 const Form = ({add, name, nameHandle, number, numberHandle}) =>
 {
@@ -184,14 +183,15 @@ const App = () => {
 	{
 		for (let i = id; i > 0; i--)
 		{
-			axios.put(`http://localhost:3001/persons/${i}`, updatedPersons[i - 1])
-			.then(response => {console.log('put first half')});
+			addService
+				.update(i, updatedPersons[i - 1])
+				.then(response => {console.log('put first half')});
 		}
 		for (let i = id; i < updatedPersons.length; i++)
 		{
-			axios.put(`http://localhost:3001/persons/${i + 1}`, updatedPersons[i])
-			.then(response => {console.log('put second half')});
-
+			addService
+				.update(i + 1, updatedPersons[i])
+				.then(response => {console.log('put second half')});
 		}
 	}
 	/**
@@ -245,13 +245,11 @@ const App = () => {
 			targetPerson[0].number = number;
 			const	updatedNumber = persons.map(person => person.name !== name ? person : targetPerson[0]);
 			
-			axios.put(`http://localhost:3001/persons/${targetId}`, updatedNumber[targetId - 1]);
+			addService
+				.update(targetId, updatedNumber[targetId - 1]);
 			setPersons(updatedNumber);
 		}
 	}
-
-	//const	test = (persons.filter(person => (person.name === 'Dan Cruz')))[0].id;
-	//console.log(test);
 
   return (
     <div>

@@ -16,12 +16,12 @@ const	create = (personObject) =>
 	return (request.then(response => response.data));
 }
 
-/*const	update = (newPersons) =>
+const	update = (id, newPersons) =>
 {
-	const	request = axios.put(baseUrl, newPersons);
+	const	request = axios.put(`${baseUrl}/${id}`, newPersons);
 
 	return (request.then(response => response.data));
-}*/
+}
 
 const	deletePerson = (id) =>
 {
@@ -30,4 +30,4 @@ const	deletePerson = (id) =>
 	return (request);
 }
 
-export default { getAll, create, deletePerson }
+export default { getAll, create, deletePerson, update }
