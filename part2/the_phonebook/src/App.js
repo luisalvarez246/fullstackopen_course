@@ -1,15 +1,25 @@
 import { useState, useEffect } from 'react'
 import addService from './services/addService'
 
-const	Notification = ({message}) =>
+const	Notification = ({message, error}) =>
 {
-	if (!message)
-		return (null);	
-	return (
-		<div className = 'message'>
-			{message}
-		</div>
-	)
+	if (message)
+	{		
+		return (
+			<div className = 'message'>
+				{message}
+			</div>
+		)
+	}
+	else if (error)
+	{
+		return (
+			<div className = 'error'>
+				{error}
+			</div>
+		)
+	}
+	return (null);
 }
 
 const	Form = ({add, name, nameHandle, number, numberHandle}) =>
@@ -88,6 +98,7 @@ const	App = () =>
 	const	[newNumber, setNewNumber] = useState('');
 	const 	[newFilter, setNewFilter] = useState('');
 	const	[newMessage, setNewMessage] = useState('');
+	const	[newError, setNewError] = useState('');
 
 	const	effectHook = () =>
 	{
@@ -260,17 +271,28 @@ const	App = () =>
 			const	updatedNumber = persons.map(person => person.name !== name ? person : targetPerson[0]);
 			
 			addService
-				.update(targetId, updatedNumber[targetId - 1]);
-			setPersons(updatedNumber);
-			setNewMessage(`${name}'s phone number was changed successfully!`);
-			setTimeout(() => {setNewMessage(null)}, 5000);
+				.update(targetId, updatedNumber[targetId - 1])
+				.then(response => 
+				{
+					setPersons(updatedNumber);
+					setNewMessage(`${name}'s phone number was changed successfully!`);
+					setTimeout(() => {setNewMessage(null)}, 5000);
+				}
+				)
+				.catch(error =>
+				{
+					setNewError(`${name} was already deleted`);
+					setTimeout(() => {setNewError(null)}, 5000);
+					setPersons(persons.filter(person => person.name !== name));
+				}
+				)
 		}
 	}
 
   return (
     <div>
       <h2>Phonebook</h2>
-	  <Notification message = {newMessage} />
+	  <Notification message = {newMessage} error = {newError}/>
 	  <Filter filter = {newFilter} filterHandle = {filterHandle} />
 	  <h3>Add a new</h3>
 	  <Form 
