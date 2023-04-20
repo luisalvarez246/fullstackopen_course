@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react'
 import addService from './services/addService'
 
-const Form = ({add, name, nameHandle, number, numberHandle}) =>
+const	Notification = ({message}) =>
+{
+	if (!message)
+		return (null);	
+	return (
+		<div className = 'message'>
+			{message}
+		</div>
+	)
+}
+
+const	Form = ({add, name, nameHandle, number, numberHandle}) =>
 {
 	return (
 		<form onSubmit = {add}>
@@ -49,7 +60,7 @@ const	Contact = ({name, number, filter, remove}) =>
 	}
 }
 
-const AddPerson = ({persons, filter, remove}) =>
+const	AddPerson = ({persons, filter, remove}) =>
 {
 	return (
 		<div>
@@ -70,13 +81,14 @@ const AddPerson = ({persons, filter, remove}) =>
 	)
 }
 
-
-const App = () => {
+const	App = () => 
+{
 	const 	[persons, setPersons] = useState([]);
 	const 	[newName, setNewName] = useState('');
 	const	[newNumber, setNewNumber] = useState('');
-	const 	[newFilter, setNewFilter] = useState(''); 
-	
+	const 	[newFilter, setNewFilter] = useState('');
+	const	[newMessage, setNewMessage] = useState('');
+
 	const	effectHook = () =>
 	{
 		addService
@@ -122,6 +134,8 @@ const App = () => {
 			.then(returnedPerson =>
 			{
 				setPersons(persons.concat(returnedPerson));
+				setNewMessage(`Added ${personObject.name}!`);
+				setTimeout(() => {setNewMessage(null)}, 5000);
 				setNewName('');
 				setNewNumber('');
 			}	
@@ -248,12 +262,15 @@ const App = () => {
 			addService
 				.update(targetId, updatedNumber[targetId - 1]);
 			setPersons(updatedNumber);
+			setNewMessage(`${name}'s phone number was changed successfully!`);
+			setTimeout(() => {setNewMessage(null)}, 5000);
 		}
 	}
 
   return (
     <div>
       <h2>Phonebook</h2>
+	  <Notification message = {newMessage} />
 	  <Filter filter = {newFilter} filterHandle = {filterHandle} />
 	  <h3>Add a new</h3>
 	  <Form 
