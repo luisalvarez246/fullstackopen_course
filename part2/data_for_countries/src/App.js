@@ -14,11 +14,11 @@ const	Search = ({newSearch, newSearchHandle}) =>
 	)
 }
 
-const	Countries = ({name}) =>
+const	Countries = ({name, select}) =>
 {	
 	console.log(name);
 	return (
-		<p>{name} <button>show</button></p>
+		<p>{name} <button onClick = {select}>show</button></p>
 	)
 }
 
@@ -52,7 +52,7 @@ const	CountryDetails = ({name, capital, area, languages, flag}) =>
 	)
 }
 
-const	Results = ({results}) =>
+const	Results = ({results, select}) =>
 {
 	console.log(results);
 	if (!results)
@@ -90,6 +90,7 @@ const	Results = ({results}) =>
 				<Countries
 					name = {result}
 					key = {i}
+					select = {() => select({result})}
 				/>
 			]	
 			)
@@ -120,7 +121,7 @@ function App()
 				{
 					const	allResults = response.data.filter(country => country.name.common
 						.toLowerCase()
-						.includes(newSearch) === true)
+						.includes(newSearch.toLowerCase()) === true)
 					//	.map(country => country.name.common);
 					
 					console.log(allResults);
@@ -128,14 +129,25 @@ function App()
 				}
 				)
 		}
+		else
+		{
+			setCountries('');
+		}
 	}
 	
 	useEffect(hook, [newSearch]);
 
+	const	select = (countryName) =>
+	{
+		console.log('is entering select');
+		console.log(countryName.result);
+		setSearch(countryName.result);
+	}
+
 	return (
 		<>
 			<Search newSearch = {newSearch} newSearchHandle = {newSearchHandle} />
-			<Results results = {countries} />
+			<Results results = {countries} select = {select}/>
 		</>
 	);
 }
