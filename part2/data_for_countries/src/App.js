@@ -14,6 +14,30 @@ const	Search = ({newSearch, newSearchHandle}) =>
 	)
 }
 
+const	Weather = ({temperature, wind, icon, capital}) =>
+{
+	if (temperature && wind && icon)
+	{
+		const	temp = Math.floor({...Object.entries(temperature)[0]}[1] - 273);
+		const	speed = {...Object.entries(wind)[0]}[1];
+		const	pic = (icon[1])[0].icon;
+		const	url = `https://openweathermap.org/img/wn/${pic}@2x.png`
+
+		console.log(temp);
+		console.log(speed);
+		console.log(pic)
+		
+		return (
+			<>
+				<h1>Weather in {capital}</h1>
+				<p>temperature {temp} Celsius</p>
+				<img src = {url} alt = 'weather icon' />
+				<p>wind {speed} m/s</p>
+			</>
+		)
+	}
+}
+
 const	Countries = ({name, select}) =>
 {	
 	console.log(name);
@@ -52,7 +76,7 @@ const	CountryDetails = ({name, capital, area, languages, flag}) =>
 	)
 }
 
-const	Results = ({results, select}) =>
+const	Results = ({results, select, data}) =>
 {
 	console.log(results);
 	if (!results)
@@ -68,7 +92,11 @@ const	Results = ({results, select}) =>
 	else if (results.length === 1)
 	{
 		console.log(Object.entries(results[0].languages).map(language => language[1]));
-		console.log(results[0].flags.png);
+		console.log(results[0].latlng[1]);
+		const	dataArray = Object.entries(data);
+		console.log(dataArray);
+		//const lat = results[0].latlng[0];
+		//const long = results[0].latlng[1];
 		return (
 			<div>
 				<CountryDetails 
@@ -77,6 +105,13 @@ const	Results = ({results, select}) =>
 					area = {results[0].area}
 					languages = {results[0].languages}
 					flag = {results[0].flags.png}
+				/>
+				<Weather 
+					temperature = {{...dataArray[3]}[1]}
+					wind = {{...dataArray[5]}[1]}
+					icon = {dataArray[1]}
+					capital = {results[0].capital[0]}
+					//key = {i}
 				/>
 			</div>
 		)
@@ -103,6 +138,7 @@ function App()
 {
 	const	[newSearch, setSearch] = useState('');
 	const	[countries, setCountries] = useState('');
+	const	[data, setData] = useState('');
 
 	const	newSearchHandle = (event) =>
 	{
@@ -126,17 +162,20 @@ function App()
 					
 					console.log(allResults);
 					setCountries(allResults);
+					setData('');
 				}
 				)
 		}
 		else
 		{
 			setCountries('');
+			setData('');
 		}
 	}
 	
 	useEffect(hook, [newSearch]);
 
+	// Voy a hacer testing del codigo de Weather aquí en select.
 	const	select = (countryName) =>
 	{
 		console.log('is entering select');
@@ -144,10 +183,39 @@ function App()
 		setSearch(countryName.result);
 	}
 
+	const	dataHook = () =>
+	{
+		if (countries.length === 1)
+		{
+			console.log('enters fetch')
+			const lat = countries[0].latlng[0];
+			const long = countries[0].latlng[1];
+			const	api_key = process.env.REACT_APP_API_KEY;
+			const	dataUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${api_key}`;
+		
+			axios
+				.get(dataUrl)
+				.then(response =>
+				{
+					setData(response.data);
+				}
+				)
+		}
+	}
+	useEffect(dataHook, [countries])
+	/*if (data)
+	{
+		const	temperature = Math.floor(data.main.temp - 273);
+		const	wind = data.wind.speed;
+		const	icon_url = 'https://openweathermap.org/img/wn'
+		const	icon = `${icon_url}/${data.weather[0].icon}@2x.png`
+	}*/
+	//console.log(countries[0].name.common)
+
 	return (
 		<>
 			<Search newSearch = {newSearch} newSearchHandle = {newSearchHandle} />
-			<Results results = {countries} select = {select}/>
+			<Results results = {countries} select = {select} data = {data} />
 		</>
 	);
 }
