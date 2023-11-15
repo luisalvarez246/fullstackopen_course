@@ -100,18 +100,18 @@ const	App = () =>
 	const	[newMessage, setNewMessage] = useState('');
 	const	[newError, setNewError] = useState('');
 
-	const	effectHook = () =>
+	const	loadData = async () =>
 	{
-		addService
-		.getAll()
-		.then(initialPersons =>
-		{
-			setPersons(initialPersons);
-		}
-		)
+		const	initialPersons = await addService.getAll();
+
+		setPersons(initialPersons);
+		console.log(persons);
 	}
 	
-	useEffect(effectHook, []);
+	useEffect(() =>
+	{
+		loadData();
+	}, []);
 		
 	const	addName = (event) =>
 	{
@@ -186,77 +186,19 @@ const	App = () =>
 		}
 		return (0);
 	}
-
-	const	idUpdate = (updatedPersons, last) =>
-	{
-		let	changedId;
-
-		changedId = last;
-		for (let i = 1; i <= updatedPersons.length; i++)
-		{
-			if (i !== updatedPersons[i - 1].id)
-			{
-				updatedPersons[i - 1].id = i;
-				changedId = i;
-			}
-			console.log(updatedPersons[i - 1].name, updatedPersons[i - 1].id);
-		}
-		return (changedId);
-	}
-
-	const	addNext = (updatedPersons, id) =>
-	{
-		for (let i = id; i > 0; i--)
-		{
-			addService
-				.update(i, updatedPersons[i - 1])
-				.then(response => {console.log('put first half')});
-		}
-		for (let i = id; i < updatedPersons.length; i++)
-		{
-			addService
-				.update(i + 1, updatedPersons[i])
-				.then(response => {console.log('put second half')});
-		}
-	}
-	/**
-	 * 
-	 * @updatedPersons is a copy of the array persons, filtering out the element to be deleted.
-	 * @changeID returns the ID of the element to be deleted.
-	 *  @Conditional if the element to be deleted is the last element on the array, no id reassignation is 
-	 * 				carried.
-	 * 				else the addNext function is called. It uses put requests to update each element on the 
-	 * 				server but the last with the updatedPersons array.
-	 * 				Then the last element, that will be duplicated, is deleted.
-	 * Lastly setPersons() is called with updatedPersons in order to refresh the view.
-	 */
+	
 	const	removePerson = (id) =>
 	{
-		let	changedId;
 		const updatedPersons = persons.filter(person => person.id !== id);
 
-		changedId = idUpdate(updatedPersons, persons.length);
-		if (changedId === persons.length)
-		{
-			addService
-				.deletePerson(id)
-				.then(response => {console.log('deleted last, no reorder needed')});
-		}
-		else
-		{
-			addNext(updatedPersons, id);
-			addService
-				.deletePerson(persons.length)
-				.then(response => {console.log('deleted, item, list reordered')});
-		}
-			setPersons(updatedPersons);
-			console.log(updatedPersons);
-			console.log(changedId);		
+		addService.deletePerson(id);
+		setPersons(updatedPersons);
 	}
 	
 	const	remove = (id) =>
 	{
-		if (window.confirm(`Do you want to delete ${persons[id - 1].name} from phonebook?`))
+		const	name = persons.filter(person => person.id === id)[0].name;
+		if (window.confirm(`Do you want to delete ${name} from phonebook?`))
 			removePerson(id);
 	}
 
@@ -264,19 +206,21 @@ const	App = () =>
 	{
 		if (window.confirm(`Do you want to overwrite ${name}'s phone number?`))
 		{ 
-			const	targetPerson = persons.filter(person => (person.name === name));
+			const	targetPerson = persons.filter(person => (person.name === name))[0];
 			const	targetId = (persons.filter(person => (person.name === name)))[0].id;
 			
-			targetPerson[0].number = number;
-			const	updatedNumber = persons.map(person => person.name !== name ? person : targetPerson[0]);
+			targetPerson.number = number;
+			const	updatedPersons = persons.map(person => person.name !== name ? person : targetPerson);
 			
 			addService
-				.update(targetId, updatedNumber[targetId - 1])
+				.update(targetId, targetPerson)
 				.then(response => 
 				{
-					setPersons(updatedNumber);
+					setPersons(updatedPersons);
 					setNewMessage(`${name}'s phone number was changed successfully!`);
 					setTimeout(() => {setNewMessage(null)}, 5000);
+					setNewName('');
+					setNewNumber('');
 				}
 				)
 				.catch(error =>
