@@ -113,14 +113,13 @@ const	App = () =>
 		loadData();
 	}, []);
 		
-	const	addName = (event) =>
+	const	addName = async (event) =>
 	{
 		event.preventDefault();
 		const personObject =
 		{
 			name: newName,
 			number: newNumber,
-			id: persons.length + 1,
 		}
 		if (personObject.name === '' || personObject.number === '')
 		{
@@ -140,17 +139,21 @@ const	App = () =>
 		}
 		else
 		{	
-			addService
-			.create(personObject)
-			.then(returnedPerson =>
+			try
 			{
-				setPersons(persons.concat(returnedPerson));
+				const savePerson = await addService.create(personObject);
+
+				setPersons(persons.concat(savePerson));
 				setNewMessage(`Added ${personObject.name}!`);
 				setTimeout(() => {setNewMessage(null)}, 5000);
 				setNewName('');
 				setNewNumber('');
-			}	
-			)
+			}
+			catch (error)
+			{
+				setNewError(error.response.data.error);
+				setTimeout(() => {setNewError(null)}, 5000);
+			}
 		}
 	}
 
@@ -181,6 +184,7 @@ const	App = () =>
 		}
 		for (let i = 0; i < persons.length; i++)
 		{
+			console.log(persons[i].number, number);
 			if (persons[i].number === number)
 				return (2);
 		}
