@@ -4,3 +4,6 @@
 [submodule "part4"]
 	path = part4
 	url = https://github.com/luisalvarez246/fullstackopen_part4.git
+[submodule "part5"]
+	path = part5
+	url = https://github.com/luisalvarez246/fullstackopen_part5
